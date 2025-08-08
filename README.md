@@ -31,7 +31,7 @@ Este comando irá:
 1. Instalar automaticamente as dependências
 2. Limpar e preparar as pastas de destino
 3. Executar o download de todos os arquivos
-4. Mostrar um relatório detalhado
+4. Mostrar um relatório detalhado com tamanhos
 
 ### Opção 2: Execução Manual
 
@@ -55,6 +55,8 @@ python download_assets.py
 -   ✅ Organização automática por tipo de arquivo
 -   ✅ **Limpeza automática das pastas antes do download**
 -   ✅ Criação automática das pastas se não existirem
+-   ✅ **Monitoramento de tamanho dos arquivos em tempo real**
+-   ✅ **Cálculo do espaço total ocupado**
 -   ✅ Relatório detalhado do progresso
 -   ✅ Tratamento de erros
 -   ✅ Pausa entre downloads para não sobrecarregar o servidor
@@ -73,15 +75,38 @@ python download_assets.py
 
 -   `.png`, `.jpg`, `.jpeg`, `.gif`, `.bmp`, `.webp`, `.svg`
 
-## 📈 Relatório
+## 📈 Relatório Detalhado
 
-O script fornece um relatório detalhado incluindo:
+O script fornece um relatório completo incluindo:
 
--   Número de áudios baixados
--   Número de vídeos baixados
--   Número de imagens baixadas
--   Lista de arquivos baixados
+-   Número de arquivos baixados por tipo
+-   **Tamanho total de cada categoria (MB/GB)**
+-   **Tamanho individual de cada arquivo**
+-   **Espaço total ocupado por todas as pastas**
+-   Lista detalhada de arquivos com seus tamanhos
 -   Contagem de erros
+
+## 💾 Monitoramento de Tamanho
+
+### Durante o Download
+
+-   Mostra o tamanho de cada arquivo após o download
+-   Exemplo: `✅ Download concluído: video.mp4 (15.23 MB)`
+
+### No Relatório Final
+
+-   **Tamanho por categoria:**
+
+    -   Áudios: X arquivos (Y MB/GB)
+    -   Vídeos: X arquivos (Y MB/GB)
+    -   Imagens: X arquivos (Y MB/GB)
+
+-   **Tamanho total:**
+
+    -   Espaço total ocupado: Z MB/GB
+
+-   **Lista detalhada:**
+    -   Cada arquivo com seu tamanho individual
 
 ## ⚠️ Observações
 
@@ -89,6 +114,7 @@ O script fornece um relatório detalhado incluindo:
 -   O script faz uma pausa de 0.5 segundos entre downloads para não sobrecarregar o servidor
 -   Erros de download são registrados mas não interrompem o processo
 -   As pastas `audios`, `videos` e `images` serão criadas automaticamente se não existirem
+-   **Tamanhos são calculados automaticamente** e mostrados em MB ou GB conforme apropriado
 
 ## 🧹 Limpeza Automática
 
@@ -122,12 +148,17 @@ Certifique-se de ter permissões de escrita no diretório atual.
 
 ⚠️ **IMPORTANTE**: O script limpa as pastas antes do download. Se você tiver arquivos importantes nas pastas `audios`, `videos` ou `images`, faça backup antes de executar o script.
 
+### Problemas com tamanho de arquivo
+
+Se houver problemas ao calcular o tamanho dos arquivos, o script continuará funcionando normalmente, apenas não mostrará as informações de tamanho.
+
 ## 📝 Logs
 
 O script mostra logs detalhados durante a execução:
 
 -   🗑️ Limpando pasta
 -   📁 Criando pasta
--   ✅ Download concluído
+-   ✅ Download concluído (com tamanho)
 -   ❌ Erro ao baixar
 -   ⚠️ Tipo de arquivo não reconhecido
+-   💾 Espaço total ocupado

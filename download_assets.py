@@ -5,6 +5,34 @@ import shutil
 from urllib.parse import urlparse
 import time
 
+def get_file_size_mb(file_path):
+    """Retorna o tamanho do arquivo em MB"""
+    try:
+        size_bytes = os.path.getsize(file_path)
+        size_mb = size_bytes / (1024 * 1024)
+        return size_mb
+    except:
+        return 0
+
+def get_directory_size_mb(directory_path):
+    """Retorna o tamanho total de um diretório em MB"""
+    total_size = 0
+    try:
+        for dirpath, dirnames, filenames in os.walk(directory_path):
+            for filename in filenames:
+                file_path = os.path.join(dirpath, filename)
+                total_size += os.path.getsize(file_path)
+        return total_size / (1024 * 1024)
+    except:
+        return 0
+
+def format_file_size(size_mb):
+    """Formata o tamanho do arquivo para exibição"""
+    if size_mb >= 1024:
+        return f"{size_mb/1024:.2f} GB"
+    else:
+        return f"{size_mb:.2f} MB"
+
 def clean_directory(directory_path):
     """Remove todo o conteúdo de um diretório"""
     if os.path.exists(directory_path):
@@ -34,11 +62,15 @@ def download_file(url, local_path):
             for chunk in response.iter_content(chunk_size=8192):
                 f.write(chunk)
         
-        print(f"✅ Download concluído: {os.path.basename(local_path)}")
-        return True
+        # Calcula o tamanho do arquivo baixado
+        file_size_mb = get_file_size_mb(local_path)
+        file_size_str = format_file_size(file_size_mb)
+        
+        print(f"✅ Download concluído: {os.path.basename(local_path)} ({file_size_str})")
+        return True, file_size_mb
     except Exception as e:
         print(f"❌ Erro ao baixar {url}: {str(e)}")
-        return False
+        return False, 0
 
 def get_file_extension(url):
     """Extrai a extensão do arquivo da URL"""
@@ -97,6 +129,11 @@ def main():
     image_count = 0
     error_count = 0
     
+    # Contadores de tamanho
+    audio_size_total = 0
+    video_size_total = 0
+    image_size_total = 0
+    
     for i, url in enumerate(urls, 1):
         print(f"\n[{i}/{len(urls)}] Processando: {url}")
         
@@ -122,8 +159,17 @@ def main():
             continue
         
         # Faz o download
-        if download_file(url, local_path):
+        success, file_size = download_file(url, local_path)
+        if success:
             print(f"📁 Salvo em: {local_path}")
+            
+            # Adiciona o tamanho ao total correspondente
+            if is_audio_file(url):
+                audio_size_total += file_size
+            elif is_video_file(url):
+                video_size_total += file_size
+            elif is_image_file(url):
+                image_size_total += file_size
         else:
             error_count += 1
         
@@ -132,13 +178,17 @@ def main():
     
     print("\n" + "=" * 50)
     print("📊 RESUMO DO DOWNLOAD:")
-    print(f"✅ Áudios baixados: {audio_count}")
-    print(f"✅ Vídeos baixados: {video_count}")
-    print(f"✅ Imagens baixadas: {image_count}")
+    print(f"✅ Áudios baixados: {audio_count} ({format_file_size(audio_size_total)})")
+    print(f"✅ Vídeos baixados: {video_count} ({format_file_size(video_size_total)})")
+    print(f"✅ Imagens baixadas: {image_count} ({format_file_size(image_size_total)})")
     print(f"❌ Erros: {error_count}")
     print(f"📁 Total processado: {len(urls)}")
     
-    # Lista os arquivos baixados
+    # Calcula o tamanho total de todas as pastas
+    total_size = audio_size_total + video_size_total + image_size_total
+    print(f"\n💾 ESPAÇO TOTAL OCUPADO: {format_file_size(total_size)}")
+    
+    # Lista os arquivos baixados com seus tamanhos
     print("\n📂 ARQUIVOS BAIXADOS:")
     
     audio_dir = 'audios'
@@ -150,21 +200,27 @@ def main():
         if audio_files:
             print(f"\n🎵 Áudios ({len(audio_files)}):")
             for file in sorted(audio_files):
-                print(f"   - {file}")
+                file_path = os.path.join(audio_dir, file)
+                file_size = get_file_size_mb(file_path)
+                print(f"   - {file} ({format_file_size(file_size)})")
     
     if os.path.exists(video_dir):
         video_files = os.listdir(video_dir)
         if video_files:
             print(f"\n🎬 Vídeos ({len(video_files)}):")
             for file in sorted(video_files):
-                print(f"   - {file}")
+                file_path = os.path.join(video_dir, file)
+                file_size = get_file_size_mb(file_path)
+                print(f"   - {file} ({format_file_size(file_size)})")
     
     if os.path.exists(image_dir):
         image_files = os.listdir(image_dir)
         if image_files:
             print(f"\n🖼️  Imagens ({len(image_files)}):")
             for file in sorted(image_files):
-                print(f"   - {file}")
+                file_path = os.path.join(image_dir, file)
+                file_size = get_file_size_mb(file_path)
+                print(f"   - {file} ({format_file_size(file_size)})")
 
 if __name__ == "__main__":
     main() 

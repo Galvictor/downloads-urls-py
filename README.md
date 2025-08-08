@@ -15,7 +15,7 @@ scripts/
 ├── run_download.py
 ├── requirements.txt
 ├── urls.json
-└── README_download.md
+└── README.md
 ```
 
 ## 🚀 Como Usar

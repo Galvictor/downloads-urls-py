@@ -11,12 +11,36 @@ scripts/
 ├── audios/             # Áudios baixados (.mp3, .wav, .aac, etc.)
 ├── videos/             # Vídeos baixados (.mp4, .avi, .mov, etc.)
 ├── images/             # Imagens baixadas (.png, .jpg, etc.)
-├── download_assets.py
-├── run_download.py
-├── requirements.txt
-├── urls.json
-└── README.md
+├── download_assets.py  # Script principal
+├── utils.py            # Módulo de funções auxiliares
+├── run_download.py     # Script de execução automática
+├── requirements.txt    # Dependências
+├── urls.json          # Lista de URLs para download
+└── README.md          # Documentação
 ```
+
+## 🏗️ Arquitetura Modular
+
+O projeto foi organizado em módulos para melhor manutenção:
+
+### 📄 `download_assets.py` - Script Principal
+
+-   **Função**: Orquestra todo o processo de download
+-   **Responsabilidades**:
+    -   Carrega URLs do arquivo JSON
+    -   Coordena o processo de download
+    -   Gerencia contadores e estatísticas
+    -   Chama funções do módulo utils
+
+### 🔧 `utils.py` - Módulo de Utilitários
+
+-   **Função**: Contém todas as funções auxiliares
+-   **Categorias de funções**:
+    -   **Manipulação de arquivos**: `get_file_size_mb()`, `clean_directory()`
+    -   **Download**: `download_file()` com barra de progresso
+    -   **Detecção de tipos**: `is_audio_file()`, `is_video_file()`, `is_image_file()`
+    -   **Formatação**: `format_file_size()`, `get_filename_from_url()`
+    -   **Relatórios**: `print_download_summary()`, `print_file_listing()`
 
 ## 🚀 Como Usar
 
@@ -58,6 +82,7 @@ python download_assets.py
 -   ✅ **Barra de progresso em tempo real (0% a 100%)**
 -   ✅ **Monitoramento de tamanho dos arquivos em tempo real**
 -   ✅ **Cálculo do espaço total ocupado**
+-   ✅ **Arquitetura modular** para fácil manutenção
 -   ✅ Relatório detalhado do progresso
 -   ✅ Tratamento de erros
 -   ✅ Pausa entre downloads para não sobrecarregar o servidor
@@ -136,6 +161,31 @@ A barra inclui:
 -   **Lista detalhada:**
     -   Cada arquivo com seu tamanho individual
 
+## 🔧 Funções Principais (utils.py)
+
+### Manipulação de Arquivos
+
+-   `get_file_size_mb()` - Calcula tamanho de arquivo em MB
+-   `get_directory_size_mb()` - Calcula tamanho total de diretório
+-   `clean_directory()` - Limpa ou cria diretórios
+
+### Download
+
+-   `download_file()` - Download com barra de progresso
+-   `format_file_size()` - Formata tamanhos para exibição
+
+### Detecção de Tipos
+
+-   `is_audio_file()` - Verifica se é arquivo de áudio
+-   `is_video_file()` - Verifica se é arquivo de vídeo
+-   `is_image_file()` - Verifica se é arquivo de imagem
+-   `determine_file_type_and_path()` - Determina tipo e caminho
+
+### Relatórios
+
+-   `print_download_summary()` - Imprime resumo do download
+-   `print_file_listing()` - Lista arquivos com tamanhos
+
 ## ⚠️ Observações
 
 -   **ATENÇÃO**: O script limpa completamente as pastas `audios`, `videos` e `images` antes de cada execução
@@ -144,6 +194,7 @@ A barra inclui:
 -   As pastas `audios`, `videos` e `images` serão criadas automaticamente se não existirem
 -   **Tamanhos são calculados automaticamente** e mostrados em MB ou GB conforme apropriado
 -   **A barra de progresso funciona apenas quando o servidor fornece o tamanho total do arquivo**
+-   **Código modular** facilita manutenção e extensão
 
 ## 🧹 Limpeza Automática
 
@@ -188,6 +239,13 @@ Se a barra de progresso não aparecer, pode ser porque:
 -   O servidor não fornece o tamanho total do arquivo
 -   Problemas de conectividade
 -   O script continuará funcionando normalmente, apenas sem a barra visual
+
+### Problemas com módulos
+
+Se houver erro de importação do `utils.py`:
+
+-   Verifique se o arquivo `utils.py` está no mesmo diretório
+-   Certifique-se de que todas as dependências estão instaladas
 
 ## 📝 Logs
 

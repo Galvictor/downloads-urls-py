@@ -6,6 +6,7 @@ cálculo de tamanhos e organização de downloads.
 
 import os
 import shutil
+import zipfile
 from urllib.parse import urlparse
 from tqdm import tqdm
 import requests
@@ -425,3 +426,93 @@ def print_file_listing():
                 file_path = os.path.join(image_dir, file)
                 file_size = get_file_size_mb(file_path)
                 print(f"   - {file} ({format_file_size(file_size)})")
+
+
+def ask_user_for_zip():
+    """
+    Pergunta ao usuário se deseja criar um arquivo ZIP dos downloads.
+    
+    Returns:
+        bool: True se o usuário quiser criar o ZIP, False caso contrário
+        
+    Exemplo:
+        >>> ask_user_for_zip()
+        🤔 Deseja criar um arquivo ZIP com todos os downloads? (s/n): s
+        True
+    """
+    while True:
+        response = input("\n🤔 Deseja criar um arquivo ZIP com todos os downloads? (s/n): ").lower().strip()
+        if response in ['s', 'sim', 'y', 'yes']:
+            return True
+        elif response in ['n', 'não', 'nao', 'no']:
+            return False
+        else:
+            print("❌ Por favor, responda com 's' para sim ou 'n' para não.")
+
+
+def create_zip_from_downloads():
+    """
+    Cria um arquivo ZIP com todos os downloads e limpa as pastas.
+    
+    Esta função:
+    1. Cria um arquivo ZIP com todos os arquivos baixados
+    2. Organiza os arquivos por pasta dentro do ZIP
+    3. Mostra o progresso da compressão
+    4. Limpa as pastas originais após a compressão
+    5. Retorna o caminho do arquivo ZIP criado
+    
+    Returns:
+        str: Caminho do arquivo ZIP criado, ou None se houver erro
+        
+    Exemplo:
+        >>> create_zip_from_downloads()
+        📦 Criando arquivo ZIP...
+        📁 Adicionando audios/ (5 arquivos)
+        📁 Adicionando videos/ (19 arquivos)
+        📁 Adicionando images/ (3 arquivos)
+        ✅ ZIP criado com sucesso: downloads_2024-01-15_14-30-25.zip (171.57 MB)
+        🗑️  Limpando pastas originais...
+        'downloads_2024-01-15_14-30-25.zip'
+    """
+    import datetime
+    
+    # Gera nome do arquivo ZIP com timestamp
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    zip_filename = f"downloads_{timestamp}.zip"
+    
+    print(f"\n📦 Criando arquivo ZIP...")
+    
+    try:
+        with zipfile.ZipFile(zip_filename, 'w', zipfile.ZIP_DEFLATED) as zipf:
+            # Lista de diretórios para adicionar ao ZIP
+            directories = ['audios', 'videos', 'images']
+            
+            for directory in directories:
+                if os.path.exists(directory):
+                    files = os.listdir(directory)
+                    if files:
+                        print(f"📁 Adicionando {directory}/ ({len(files)} arquivos)")
+                        
+                        for file in files:
+                            file_path = os.path.join(directory, file)
+                            # Adiciona ao ZIP mantendo a estrutura de pastas
+                            zipf.write(file_path, os.path.join(directory, file))
+        
+        # Calcula o tamanho do ZIP criado
+        zip_size_mb = get_file_size_mb(zip_filename)
+        zip_size_str = format_file_size(zip_size_mb)
+        
+        print(f"✅ ZIP criado com sucesso: {zip_filename} ({zip_size_str})")
+        
+        # Limpa as pastas originais
+        print("🗑️  Limpando pastas originais...")
+        for directory in directories:
+            if os.path.exists(directory):
+                clean_directory(directory)
+        
+        print("✅ Processo concluído! Arquivos compactados e pastas limpas.")
+        return zip_filename
+        
+    except Exception as e:
+        print(f"❌ Erro ao criar ZIP: {str(e)}")
+        return None

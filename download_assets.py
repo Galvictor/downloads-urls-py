@@ -11,7 +11,9 @@ from utils import (
     download_file,
     determine_file_type_and_path,
     print_download_summary,
-    print_file_listing
+    print_file_listing,
+    ask_user_for_zip,
+    create_zip_from_downloads
 )
 
 
@@ -50,6 +52,8 @@ def main():
     2. Limpa e prepara as pastas de destino
     3. Processa cada URL e faz o download
     4. Mostra um relatório detalhado
+    5. Pergunta se o usuário quer criar um ZIP
+    6. Cria o ZIP e limpa as pastas se solicitado
     """
     # Carrega as URLs do arquivo JSON
     try:
@@ -126,6 +130,16 @@ def main():
     
     # Lista os arquivos baixados
     print_file_listing()
+    
+    # Pergunta se o usuário quer criar um ZIP
+    if ask_user_for_zip():
+        zip_file = create_zip_from_downloads()
+        if zip_file:
+            print(f"\n🎉 Processo finalizado! Arquivo ZIP criado: {zip_file}")
+        else:
+            print("\n❌ Erro ao criar o arquivo ZIP. As pastas originais foram mantidas.")
+    else:
+        print("\n✅ Downloads concluídos! As pastas originais foram mantidas.")
 
 
 if __name__ == "__main__":

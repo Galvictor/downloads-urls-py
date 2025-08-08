@@ -4,6 +4,7 @@ import json
 import shutil
 from urllib.parse import urlparse
 import time
+from tqdm import tqdm
 
 def get_file_size_mb(file_path):
     """Retorna o tamanho do arquivo em MB"""
@@ -50,7 +51,7 @@ def clean_directory(directory_path):
         os.makedirs(directory_path, exist_ok=True)
 
 def download_file(url, local_path):
-    """Faz o download de um arquivo e salva no caminho especificado"""
+    """Faz o download de um arquivo e salva no caminho especificado com barra de progresso"""
     try:
         response = requests.get(url, stream=True)
         response.raise_for_status()
@@ -58,15 +59,32 @@ def download_file(url, local_path):
         # Cria o diretório se não existir
         os.makedirs(os.path.dirname(local_path), exist_ok=True)
         
+        # Obtém o tamanho total do arquivo
+        total_size = int(response.headers.get('content-length', 0))
+        
+        # Nome do arquivo para exibição
+        filename = os.path.basename(local_path)
+        
+        # Cria a barra de progresso
         with open(local_path, 'wb') as f:
-            for chunk in response.iter_content(chunk_size=8192):
-                f.write(chunk)
+            with tqdm(
+                total=total_size,
+                unit='B',
+                unit_scale=True,
+                unit_divisor=1024,
+                desc=f"📥 {filename}",
+                bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]'
+            ) as pbar:
+                for chunk in response.iter_content(chunk_size=8192):
+                    if chunk:
+                        f.write(chunk)
+                        pbar.update(len(chunk))
         
         # Calcula o tamanho do arquivo baixado
         file_size_mb = get_file_size_mb(local_path)
         file_size_str = format_file_size(file_size_mb)
         
-        print(f"✅ Download concluído: {os.path.basename(local_path)} ({file_size_str})")
+        print(f"✅ Download concluído: {filename} ({file_size_str})")
         return True, file_size_mb
     except Exception as e:
         print(f"❌ Erro ao baixar {url}: {str(e)}")
@@ -133,6 +151,8 @@ def main():
     audio_size_total = 0
     video_size_total = 0
     image_size_total = 0
+    
+    print("🚀 Iniciando downloads...\n")
     
     for i, url in enumerate(urls, 1):
         print(f"\n[{i}/{len(urls)}] Processando: {url}")

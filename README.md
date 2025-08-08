@@ -30,7 +30,7 @@ Este comando irá:
 
 1. Instalar automaticamente as dependências
 2. Limpar e preparar as pastas de destino
-3. Executar o download de todos os arquivos
+3. Executar o download de todos os arquivos com barra de progresso
 4. Mostrar um relatório detalhado com tamanhos
 
 ### Opção 2: Execução Manual
@@ -55,6 +55,7 @@ python download_assets.py
 -   ✅ Organização automática por tipo de arquivo
 -   ✅ **Limpeza automática das pastas antes do download**
 -   ✅ Criação automática das pastas se não existirem
+-   ✅ **Barra de progresso em tempo real (0% a 100%)**
 -   ✅ **Monitoramento de tamanho dos arquivos em tempo real**
 -   ✅ **Cálculo do espaço total ocupado**
 -   ✅ Relatório detalhado do progresso
@@ -86,6 +87,33 @@ O script fornece um relatório completo incluindo:
 -   Lista detalhada de arquivos com seus tamanhos
 -   Contagem de erros
 
+## ⏳ Barra de Progresso
+
+### Durante o Download
+
+O script mostra uma barra de progresso detalhada para cada arquivo:
+
+```
+📥 video.mp4: 100%|██████████| 15.2M/15.2M [00:05<00:00, 3.2MB/s]
+```
+
+A barra inclui:
+
+-   **Nome do arquivo** sendo baixado
+-   **Percentual** de conclusão (0% a 100%)
+-   **Barra visual** de progresso
+-   **Bytes baixados/Total** de bytes
+-   **Tempo decorrido** e **tempo restante**
+-   **Velocidade** de download (MB/s)
+
+### Informações Exibidas
+
+-   📥 Nome do arquivo
+-   ██████████ Barra de progresso visual
+-   15.2M/15.2M Bytes baixados/Total
+-   [00:05<00:00] Tempo decorrido < Tempo restante
+-   3.2MB/s Velocidade de download
+
 ## 💾 Monitoramento de Tamanho
 
 ### Durante o Download
@@ -115,6 +143,7 @@ O script fornece um relatório completo incluindo:
 -   Erros de download são registrados mas não interrompem o processo
 -   As pastas `audios`, `videos` e `images` serão criadas automaticamente se não existirem
 -   **Tamanhos são calculados automaticamente** e mostrados em MB ou GB conforme apropriado
+-   **A barra de progresso funciona apenas quando o servidor fornece o tamanho total do arquivo**
 
 ## 🧹 Limpeza Automática
 
@@ -152,12 +181,21 @@ Certifique-se de ter permissões de escrita no diretório atual.
 
 Se houver problemas ao calcular o tamanho dos arquivos, o script continuará funcionando normalmente, apenas não mostrará as informações de tamanho.
 
+### Barra de progresso não aparece
+
+Se a barra de progresso não aparecer, pode ser porque:
+
+-   O servidor não fornece o tamanho total do arquivo
+-   Problemas de conectividade
+-   O script continuará funcionando normalmente, apenas sem a barra visual
+
 ## 📝 Logs
 
 O script mostra logs detalhados durante a execução:
 
 -   🗑️ Limpando pasta
 -   📁 Criando pasta
+-   📥 Barra de progresso do download
 -   ✅ Download concluído (com tamanho)
 -   ❌ Erro ao baixar
 -   ⚠️ Tipo de arquivo não reconhecido
